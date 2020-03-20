@@ -1,4 +1,4 @@
-Pro Flight Panel Support V 1.0 - Build 5 BETA
+Pro Flight Deck Support V 1.0 - Build 5 BETA
 (c) Cassini - 20-Mar-2020
 
 Contains 6 files:
@@ -13,12 +13,12 @@ x86\vJoyInterface.dll        Native dll for vJoy (v2.00)          - MUST be in t
 
 ReadMe.txt                   This file
 
-Pro Flight Panel Support (.Net 4.7.2)
+Pro Flight Deck Support (.Net 4.7.2)
 
 Put all files into one folder and hit ProFlightPanelSupport.exe to run it
 
 For Updates and information visit:
-https://github.com/SCToolsfactory/ProFlightPanelSupport
+https://github.com/SCToolsfactory/ProFlightDeckSupport
 
 Scanned for viruses before packing... 
 cassini@burri-web.org

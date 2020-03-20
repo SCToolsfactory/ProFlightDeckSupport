@@ -1,4 +1,4 @@
-Pro Flight Panel Support V 1.0.0.5<br>
+Pro Flight Deck Support V 1.0.0.5<br>
 ==================================<br>
 <br>
 Pro Flight Switch Panel Support  (.Net 4.7.2)<br>
@@ -9,7 +9,9 @@ Actuates ONE vJoy virtual Joystick and supplies keystrokes to the active window<
  A config file defines what command are sent with the Switches and the Rotary.<br>
 <br>
 For documentation of the Config File see the Doc Folder<br>
+https://github.com/SCToolsfactory/ProFlightDeckSupport/tree/master/ProFlightPanelSupport/Doc <br>
 For a sample Config File see the Example Folder<br>
+https://github.com/SCToolsfactory/ProFlightDeckSupport/tree/master/ProFlightPanelSupport/Examples <br>
  <br>
 Note: <br>
 You have to install the vJoy (V 2.1) driver.<br>
