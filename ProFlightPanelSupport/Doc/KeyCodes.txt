@@ -1,0 +1,140 @@
+US ISO Kbd Layout
+For other local keyboards - use the letter that is at that location
+e.g. QWERTZ - Y and Z are exchanged, other may now the issue from mapping anyway..
+TEST before going Live..
+
+// 1st Row
+    VK_ESCAPE
+
+    VK_F1
+    VK_F2
+    VK_F3
+    VK_F4
+    VK_F5
+    VK_F6
+    VK_F7
+    VK_F8
+    VK_F9
+    VK_F10
+    VK_F11
+    VK_F12
+    VK_F13
+    VK_F14
+    VK_F15
+
+// 2nd Row
+    // Grave - n.a. console 
+    VK_1
+    VK_2
+    VK_3
+    VK_4
+    VK_5
+    VK_6
+    VK_7
+    VK_8
+    VK_9
+    VK_0
+    // US ISO Kbd 1st row after Key 0
+    VK_MINUS
+    VK_EQUALS
+    VK_BACKSPACE
+
+// 3rd Row
+    VK_TAB = 0x09,
+    VK_Q
+    VK_W
+    VK_E
+    VK_R
+    VK_T
+    VK_Y
+    VK_U
+    VK_I
+    VK_O
+    VK_P
+    // US ISO Kbd 2nd row after Key P
+    VK_LBRACKET
+    VK_RBRACKET
+    VK_RETURN
+
+// 4th Row
+    VK_CAPSLOCK
+    VK_A
+    VK_S
+    VK_D
+    VK_F
+    VK_G
+    VK_H
+    VK_J
+    VK_K
+    VK_L
+    // US ISO Kbd 3rd row after Key L
+    VK_SEMICOLON
+    VK_APOSTROPHE
+    VK_BACKSLASH
+
+// 5th Row
+    // LShift - modifier only
+    VK_Z
+    VK_X
+    VK_C
+    VK_V
+    VK_B
+    VK_N
+    VK_M
+    // US ISO Kbd 4th row after Key M
+    VK_COMMA
+    VK_PERIOD
+    VK_SLASH
+    // RShift - modifier only
+
+// 6th Row
+    // LCtrl - modifier only
+    // Windows - n.a.
+    // LAlt - modifier only
+    VK_SPACE
+    // RAlt - modifier only
+    // Windows - n.a.
+    // RCtrl - modifier only
+
+// Navigation
+    // PRINTSCREEN - n.a.
+    VK_SCROLL
+    VK_PAUSE - may work - can be Numlock as well (???)
+
+    VK_INSERT
+    VK_HOME
+    VK_PGUP
+
+    VK_DELETE
+    VK_END
+    VK_PGDN
+
+    VK_UPARROW
+    VK_LEFTARROW
+    VK_DOWNARROW
+    VK_RIGHTARROW
+
+// NumPad
+    VK_NUMLOCK  - may work - can trigger Pause.. (Windows?!)
+    VK_NP_DIVIDE
+    VK_NP_MULTIPLY
+    VK_NP_SUBTRACT
+    VK_NP_ADD
+
+    VK_NP_7
+    VK_NP_8
+    VK_NP_9
+
+    VK_NP_4
+    VK_NP_5
+    VK_NP_6
+
+    VK_NP_1
+    VK_NP_2
+    VK_NP_3
+    
+    VK_NP_0
+    VK_NP_PERIOD
+    VK_NP_ENTER
+
+<EOD>

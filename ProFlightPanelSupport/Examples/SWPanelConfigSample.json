@@ -1,0 +1,27 @@
+{
+  "_Comment" : "SwitchPanel Config File",
+  "MapName" : "SwitchPanel Sample Config File",
+  "SwitchMap": [
+      { "Input": "MASTER_BATT",       "Cmd" : [ { "B": {"Index": 10 }}, { "B": {"Index":1 }} ] },
+      { "Input": "MASTER_ALT",        "Cmd" : [ { "B": {"Index": 2, "Mode": "t"}}, { "B": {"Index": 2, "Mode":"t"}} ] },
+      { "Input": "AVIONICS_MASTER",   "Cmd" : [ { "B": {"Index": 3, "Mode": "t", "Delay":300}}, { "B": {"Index":3, "Mode":"t", "Delay":100}} ] },
+      { "Input": "FUEL_PUMP",         "Cmd" : [ { "B": {"Index": 1, "Mode": "p"}}, { "B": {"Index":1, "Mode":"r"}} ] },
+      { "Input": "DE_ICE",            "Cmd" : [ { "B": {"Index": 1, "Mode": "t"}} ] },
+      { "Input": "PITOT_HEAT",        "Cmd" : [ { "B": {"Index": 6, "Mode": "p"}}, { "B": {"Index":6, "Mode":"r"}} ] },
+      { "Input": "GEAR",              "Cmd" : [ { "B": {"Index": 1, "Mode": "t"}}, { "B": {"Index":1, "Mode":"t"}} ] },
+      { "Input": "COWL_CLOSE",        "Cmd" : [ { "P": {"Index": 1, "Direction": "u", "LED": "NA" }},{ "P": {"Index": 1, "Direction": "c", "LED": "NO" }} ] },
+      { "Input": "PANEL",             "Cmd" : [ { "B": {"Index": 1, "Mode": "t"}}, { "B": {"Index":1, "Mode":"t"}} ] },
+      { "Input": "BEACON",            "Cmd" : [ { "B": {"Index": 1, "Mode": "t"}}, { "B": {"Index":1, "Mode":"t"}} ] },
+      { "Input": "NAV",               "Cmd" : [ { "K": {"VKcode": "VK_NUMPADSLASH" }}, { "K": {"VKcode": "VK_NUMPADENTER" }} ] },
+      { "Input": "STROBE",            "Cmd" : [ { "B": {"Index": 1, "Mode": "t", "LED": "LG" }}, { "B": {"Index":1, "Mode":"t", "LED": "LO"}} ] },
+      { "Input": "TAXI",              "Cmd" : [ { "K": {"VKcode": "VK_Y" }}, { "K": {"VKcode": "VK_Z" }} ] },
+      { "Input": "LANDING",           "Cmd" : [ { "K": {"VKcode": "VK_A", "Modifier": "ls" }}, { "K": {"VKcode": "VK_B", "Modifier": "ls&rs" }} ] }
+    ],
+  "Rotary": [
+      { "R": {"Direction": "Z", "Value": 0}},
+      { "R": {"Direction": "Z", "Value": 250}},
+      { "R": {"Direction": "Z", "Value": 500}},
+      { "R": {"Direction": "Z", "Value": 750}},
+      { "R": {"Direction": "Z", "Value": 1000}}
+    ]
+}
