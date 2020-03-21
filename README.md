@@ -5,7 +5,7 @@ Support for HID devices of the Pro Flight Panel series<br>
 <br>
 NOTE: THIS _ IS _ VERY _ EARLY _ WORK _ IN _ PROGRESS _ IT _ MAY _ JUST _ BREAK _ AT _ ANY _ TIME ;-)<br>
 
-# PFPaneClient V1.0 an SCJoyServer Client
+# PFPanelClient V1.0 an SCJoyServer Client
 
 Intends to connect to an SCJoyServer 
 see: https://github.com/SCToolsfactory/SCJoyServer
