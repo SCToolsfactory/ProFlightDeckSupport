@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 using PFSP_HID;
 using dxKbdInterfaceWrap;
 
-namespace ProFlightPanelSupport.Commands
+namespace PFPanelClient.Commands
 {
 
   /// <summary>
@@ -141,7 +141,7 @@ namespace ProFlightPanelSupport.Commands
                     - Mode optional - either of the chars (see below)
 
         Keyboard:
-        Key:      { "K": {"VKcode": n, "Mode": "p|r|t|s|d", "Modifier": "mod", "Delay": 100, "LED": "disp" } }  
+        Key:      { "K": {"VKcode": "n", "Mode": "p|r|t|s|d", "Modifier": "mod", "Delay": 100, "LED": "disp" } }  
                     - VKcode n=> 1..255 WinUser VK_.. (see separate Reference file)
                     - Mode optional - either of the chars (see below)
                     - Modifier optional - a set of codes (see below)
@@ -155,9 +155,9 @@ namespace ProFlightPanelSupport.Commands
                                  (RG)green, (RR)ed, (RA)amber    (Right Gear LED)  
     */
 
+    // either of the one below
     [DataMember]
     public CommandAxis A { get; set; }
-    // either of the one below
     [DataMember]
     public CommandRotAxis R { get; set; }
     [DataMember]

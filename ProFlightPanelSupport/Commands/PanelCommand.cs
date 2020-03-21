@@ -53,9 +53,9 @@ namespace ProFlightPanelSupport.Commands
   public class VJCommand
   {
     // the defaults
-    public const int VJ_MAXBUTTON = 60;  // the last allowed button number
-    public const int DEFAULT_DELAY = 150; // msec
-    public const int DEFAULT_SHORTDELAY = 5; // msec - short tap const
+    internal const int VJ_MAXBUTTON = 60;  // the last allowed button number
+    internal const int DEFAULT_DELAY = 150; // msec
+    internal const int DEFAULT_SHORTDELAY = 5; // msec - short tap const
 
     /// <summary>
     /// The controller e.g. Button, Axis, etc.

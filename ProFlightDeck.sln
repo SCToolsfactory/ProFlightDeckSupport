@@ -16,6 +16,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PFSP_Console_TEST", "PFSP_C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProFlightPanelSupport", "ProFlightPanelSupport\ProFlightPanelSupport.csproj", "{649E50B2-3D71-4B43-AE29-E2383A311795}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PFPanelClient", "PFPanelClient\PFPanelClient.csproj", "{F04B98B9-475F-4D71-82C2-010592A029E3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Doc", "Doc", "{D96430D6-07ED-4613-949D-A9CFCAE39194}"
+	ProjectSection(SolutionItems) = preProject
+		Doc\ConfigSyntax.txt = Doc\ConfigSyntax.txt
+		Doc\KeyCodes.txt = Doc\KeyCodes.txt
+		Doc\QuickGuide-PFPSupport.docx = Doc\QuickGuide-PFPSupport.docx
+		Doc\QuickGuide-PFPSupport.pdf = Doc\QuickGuide-PFPSupport.pdf
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{04C96432-B0A0-40E2-BDA5-76AF09F62B87}"
+	ProjectSection(SolutionItems) = preProject
+		Examples\SWPanelConfigSample.json = Examples\SWPanelConfigSample.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -90,6 +105,26 @@ Global
 		{649E50B2-3D71-4B43-AE29-E2383A311795}.Release|x64.Build.0 = Release|Any CPU
 		{649E50B2-3D71-4B43-AE29-E2383A311795}.Release|x86.ActiveCfg = Release|Any CPU
 		{649E50B2-3D71-4B43-AE29-E2383A311795}.Release|x86.Build.0 = Release|Any CPU
+		{F04B98B9-475F-4D71-82C2-010592A029E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F04B98B9-475F-4D71-82C2-010592A029E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F04B98B9-475F-4D71-82C2-010592A029E3}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{F04B98B9-475F-4D71-82C2-010592A029E3}.Debug|ARM.Build.0 = Debug|Any CPU
+		{F04B98B9-475F-4D71-82C2-010592A029E3}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{F04B98B9-475F-4D71-82C2-010592A029E3}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{F04B98B9-475F-4D71-82C2-010592A029E3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F04B98B9-475F-4D71-82C2-010592A029E3}.Debug|x64.Build.0 = Debug|Any CPU
+		{F04B98B9-475F-4D71-82C2-010592A029E3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F04B98B9-475F-4D71-82C2-010592A029E3}.Debug|x86.Build.0 = Debug|Any CPU
+		{F04B98B9-475F-4D71-82C2-010592A029E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F04B98B9-475F-4D71-82C2-010592A029E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F04B98B9-475F-4D71-82C2-010592A029E3}.Release|ARM.ActiveCfg = Release|Any CPU
+		{F04B98B9-475F-4D71-82C2-010592A029E3}.Release|ARM.Build.0 = Release|Any CPU
+		{F04B98B9-475F-4D71-82C2-010592A029E3}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{F04B98B9-475F-4D71-82C2-010592A029E3}.Release|ARM64.Build.0 = Release|Any CPU
+		{F04B98B9-475F-4D71-82C2-010592A029E3}.Release|x64.ActiveCfg = Release|Any CPU
+		{F04B98B9-475F-4D71-82C2-010592A029E3}.Release|x64.Build.0 = Release|Any CPU
+		{F04B98B9-475F-4D71-82C2-010592A029E3}.Release|x86.ActiveCfg = Release|Any CPU
+		{F04B98B9-475F-4D71-82C2-010592A029E3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

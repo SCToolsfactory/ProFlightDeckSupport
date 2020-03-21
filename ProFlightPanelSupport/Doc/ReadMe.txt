@@ -4,8 +4,8 @@ Pro Flight Deck Support V 1.0 - Build 5 BETA
 Contains 6 files:
 
 ProFlightPanelSupport.exe    The program (V1.0)
-PFSP_HID.dll                 HID Support DLL
-HidLibrary.dll               HID Access Library
+PFSP_HID.dll                 HID Support DLL                      - MUST be in the same folder as the Exe file
+HidLibrary.dll               HID Access Library                   - MUST be in the same folder as the Exe file
 x64\SCdxKeyboard.dll         Native dll for Keyboard (v2.00)      - MUST be in the same folder as the Exe file
 x86\SCdxKeyboard.dll         Native dll for Keyboard (v2.00)      - MUST be in the same folder as the Exe file
 x64\vJoyInterface.dll        Native dll for vJoy (v2.00)          - MUST be in the same folder as the Exe file
@@ -24,4 +24,6 @@ Scanned for viruses before packing...
 cassini@burri-web.org
 
 Changelog:
+V 1.1-B6
+- refact. some items 
 V 1.0 initial 
