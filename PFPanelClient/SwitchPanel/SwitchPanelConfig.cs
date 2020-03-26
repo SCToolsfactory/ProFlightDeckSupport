@@ -97,8 +97,43 @@ namespace PFPanelClient.SwitchPanel
       m_configName = configFile.MapName;
       m_commands = configFile.VJCommands;
       Valid = m_commands.Count > 0;
+      // post process and create macros
+      PostProcess( );
     }
 
+    /// <summary>
+    /// Concats the Macro into one string
+    /// </summary>
+    /// <param name="mName">he Macroname</param>
+    /// <returns>A macro string or an empty one</returns>
+    private string MacroJ(string mName )
+    {
+      string ret = "";
+
+      var col = m_commands.Where( x => x.Key.StartsWith( mName+VJCommand.MACRO ) );
+      if ( col != null ) {
+        foreach(var cmd in col ) {
+          ret += cmd.Value.JString + " ";
+        }
+      }
+      if ( string.IsNullOrEmpty( ret ) )
+        ret = "{}"; // empty command
+        return ret;
+    }
+
+    private void PostProcess()
+    {
+      foreach ( var cmd in m_commands ) {
+        string j = cmd.Value.JString; // trigger to create the string
+      }
+      // process macros when all commands are built
+      for (int i=0; i<m_commands.Count; i++ ) {
+        if ( m_commands.ElementAt(i).Value.JString == VJCommand.MACRO ) {
+          string cmd = MacroJ( m_commands.ElementAt( i ).Value.CtrlString );
+          m_commands.ElementAt( i ).Value.SetJString( cmd );
+        }
+      }
+    }
 
     /// <summary>
     /// Returns a VJCommand for the Input string or null

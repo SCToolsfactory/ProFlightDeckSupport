@@ -4,33 +4,42 @@ Logitech (Saitek) Pro Flight Switch Panel:
 
     {
       "_Comment" : "SwitchPanel Config File",
-      "MapName" : "AnyNameWillDo",
+      "MapName"  : "AnyNameWillDo",
+	  "Macros"   : [MACRO,..],       NOTE: THIS IS ONLY SUPPORTED IN THE PFPanelClient Version !!!
       "SwitchMap": [
-          { "Input": "MASTER_BATT",       "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] },
-          { "Input": "MASTER_ALT",        "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] },
-          { "Input": "AVIONICS_MASTER",   "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] },
-          { "Input": "FUEL_PUMP",         "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] },
-          { "Input": "DE_ICE",            "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] },
-          { "Input": "PITOT_HEAT",        "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] },
-          { "Input": "GEAR",              "Cmd" : [ {COMMAND_on_up}, {COMMAND_off_down} ] },
-          { "Input": "COWL_CLOSE",        "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] },
-          { "Input": "PANEL",             "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] },
-          { "Input": "BEACON",            "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] },
-          { "Input": "NAV",               "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] },
-          { "Input": "STROBE",            "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] },
-          { "Input": "TAXI",              "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] },
-          { "Input": "LANDING",           "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] }
+          { "Input": "MASTER_BATT",       "Cmd" : [ COMMAND_on, COMMAND_off ] },
+          { "Input": "MASTER_ALT",        "Cmd" : [ COMMAND_on, COMMAND_off ] },
+          { "Input": "AVIONICS_MASTER",   "Cmd" : [ COMMAND_on, COMMAND_off ] },
+          { "Input": "FUEL_PUMP",         "Cmd" : [ COMMAND_on, COMMAND_off ] },
+          { "Input": "DE_ICE",            "Cmd" : [ COMMAND_on, COMMAND_off ] },
+          { "Input": "PITOT_HEAT",        "Cmd" : [ COMMAND_on, COMMAND_off ] },
+          { "Input": "GEAR",              "Cmd" : [ COMMAND_on_up, COMMAND_off_down ] },
+          { "Input": "COWL_CLOSE",        "Cmd" : [ COMMAND_on, COMMAND_off ] },
+          { "Input": "PANEL",             "Cmd" : [ COMMAND_on, COMMAND_off ] },
+          { "Input": "BEACON",            "Cmd" : [ COMMAND_on, COMMAND_off ] },
+          { "Input": "NAV",               "Cmd" : [ COMMAND_on, COMMAND_off ] },
+          { "Input": "STROBE",            "Cmd" : [ COMMAND_on, COMMAND_off ] },
+          { "Input": "TAXI",              "Cmd" : [ COMMAND_on, COMMAND_off ] },
+          { "Input": "LANDING",           "Cmd" : [ COMMAND_on, COMMAND_off ] }
         ],
-      "Rotary": [{COMMAND_posOff}, {COMMAND_posR}, {COMMAND_posL}, {COMMAND_posAll}, {COMMAND_posStart}]
+      "Rotary": [COMMAND_posOff, COMMAND_posR, COMMAND_posL, COMMAND_posAll, COMMAND_posStart]
     }
     
-    see below for COMMAND
+    see below for COMMAND and MACRO
 
     Note: 
       for any COMMAND: commands are allocated at the order of appearance
 
+MACRO format: NOTE: THIS IS ONLY SUPPORTED IN THE PFPanelClient Version !!!
+	MacroDef:	{ "MName": "mName", "CmdList": [COMMAND] }    -  COMMAND or a list of COMMAND,COMMAND,...
+				- mName - a macro name defined in the Macros section (must be different from Input names!)
+				- Note: LED directives in macros are ignored - use the LED directive in the M Command 
 
 COMMAND format:
+
+  Macros: NOTE: THIS IS ONLY SUPPORTED IN THE PFPanelClient Version !!!
+	Macro:    { "M": {"Macro": "mName", "LED": "disp" } }  
+	           - mName - a macro name defined in the Macros section
 
   Joystick:
     Axis:     { "A": {"Direction": "X|Y|Z", "Value": number} }
@@ -56,8 +65,11 @@ COMMAND format:
 	    Trigger the button with Index with the mode given (NOTE: a "p"ress needs a "r"elease later - otherwise it remains pressed!!)
 
   Keyboard:
-    Key:      { "K": {"VKcode": "vk", "Mode": "p|r|t|s|d", "Modifier": "mod", "Delay": 100, "LED": "disp" } }  
-                - VKcode KeyString or a number as string  n=> "1".."255"  ( VK_.. strings see separate Key Reference file KeyCodes.txt)
+    Key:      { "K": {"VKcodeEx": "keyName", "VKcode": n, "Mode": "p|r|t|s|d", "Modifier": "mod", "Delay": 100, "LED": "disp" } }  
+                - VKcodeEx "s" either a number n=> 1..255 or a WinUser VK_.. literal (see separate Reference file)
+                - VKcode n=> 1..255 WinUser VK_.. (see separate Reference file)
+                    if both are found the VKcodeEx item gets priority and the VKcode element is ignored
+                    if none is found the command is ignored
                 - Mode optional - either of the chars (see below)
                 - Modifier optional - a set of codes (see below)
 	    Trigger the key with VKcode with the mode given (NOTE: a "p"ress needs a "r"elease later - otherwise it remains pressed!!)
@@ -71,4 +83,5 @@ COMMAND format:
                              (LO)ff, (LG)reen, (LR)ed, (LA)amber,   (Left  Gear LED)
                              (RO)ff, (RG)reen, (RR)ed, (RA)amber    (Right Gear LED)
                              
+
 <EOD>

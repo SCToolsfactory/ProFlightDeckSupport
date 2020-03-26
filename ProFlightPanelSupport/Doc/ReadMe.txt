@@ -1,9 +1,9 @@
-Pro Flight Deck Support V 1.0 - Build 5 BETA
-(c) Cassini - 20-Mar-2020
+Pro Flight Deck Support V 1.2 - Build 7 BETA
+(c) Cassini - 24-Mar-2020
 
 Contains 6 files:
 
-ProFlightPanelSupport.exe    The program (V1.0)
+ProFlightPanelSupport.exe    The program (V1.2)
 PFSP_HID.dll                 HID Support DLL                      - MUST be in the same folder as the Exe file
 HidLibrary.dll               HID Access Library                   - MUST be in the same folder as the Exe file
 x64\SCdxKeyboard.dll         Native dll for Keyboard (v2.00)      - MUST be in the same folder as the Exe file
@@ -24,6 +24,8 @@ Scanned for viruses before packing...
 cassini@burri-web.org
 
 Changelog:
+V 1.2-B7
+- changed Config file syntax for Key - VKcode (int), VKcodeEx(string) see reference
 V 1.1-B6
 - refact. some items 
 V 1.0 initial 

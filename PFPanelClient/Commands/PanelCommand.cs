@@ -17,6 +17,8 @@ namespace PFPanelClient.Commands
     VJ_Hat,
 
     DX_Key, // key input 
+
+    VX_Macro, // macro as input
   }
 
   // Message Handling 
@@ -57,6 +59,8 @@ namespace PFPanelClient.Commands
     internal const int DEFAULT_DELAY = 150; // msec
     internal const int DEFAULT_SHORTDELAY = 5; // msec - short tap const
 
+    internal const string MACRO = "~"; // Trailer for Macro naming..
+
     /// <summary>
     /// The controller e.g. Button, Axis, etc.
     /// </summary>
@@ -86,6 +90,12 @@ namespace PFPanelClient.Commands
     public int CtrlValue { get; set; } = 0;
 
     /// <summary>
+    /// The string of a controller
+    /// for M it is the MacroName to call
+    /// </summary>
+    public string CtrlString { get; set; } = "";
+
+    /// <summary>
     /// The LED to illuminate
     /// </summary>
     public PFSP_HID.PFSwPanelLeds CtrlLed { get; set; } = PFSP_HID.PFSwPanelLeds.GEAR_NONE;
@@ -108,9 +118,27 @@ namespace PFPanelClient.Commands
     /// <summary>
     /// true if it is a Key message
     /// </summary>
-    public bool IsVKeyMessage { get => this.CtrlType == VJ_ControllerType.DX_Key; }
+    public bool IsKeyMessage { get => this.CtrlType == VJ_ControllerType.DX_Key; }
+
+    /// <summary>
+    /// true if it is a Key message
+    /// </summary>
+    public bool IsMacroMessage { get => this.CtrlType == VJ_ControllerType.VX_Macro; }
 
     private string m_jString = "";
+    /// <summary>
+    /// Set the JString for Macros
+    /// Note: should be used by postprocess only...
+    /// </summary>
+    /// <param name="jString">The Json String of a Macro Command</param>
+    internal void SetJString(string jString )
+    {
+      m_jString = jString;
+    }
+
+    /// <summary>
+    /// Returns the command string for any command ready to send 
+    /// </summary>
     public string JString
     {
       get {
@@ -220,8 +248,8 @@ namespace PFPanelClient.Commands
     private string JSKeyCodeNumber
     {
       get {
-        // "VKcode": "n"
-        return $"\"VKcode\": \"{this.CtrlIndex}\"";
+        // "VKcode": n  (use the int version - less overhead)
+        return $"\"VKcode\": {this.CtrlIndex}";
       }
     }
 
@@ -243,6 +271,10 @@ namespace PFPanelClient.Commands
       get {
         string ret = "";
         switch ( this.CtrlType ) {
+          case VJ_ControllerType.VX_Macro:
+            //  a string commands to be built outside, this is for one command only
+            ret = $"{MACRO}";
+            break;
           case VJ_ControllerType.VJ_Axis:
             // { "A": {"Direction": "X|Y|Z", "Value": number } }
             ret = $"{{ \"A\": {{ {JAxisDirection}, {JAnalogValue} }} }}";
@@ -264,7 +296,7 @@ namespace PFPanelClient.Commands
             ret = $"{{ \"B\": {{ {JSIndexNumber}, {JHitMode} }} }}";
             break;
           case VJ_ControllerType.DX_Key:
-            // { "K": {"VKcode": "n", "Mode": "p|r|t|s|d", "Delay": 100, "Modifier": "mod" } }  
+            // { "K": {"VKcodeEx": "keyName", "VKcode": n, "Mode": "p|r|t|s|d", "Modifier": "mod", "Delay": 100 } }  
             ret = $"{{ \"K\": {{ {JSKeyCodeNumber}, {JHitMode}, {JKeyModifier} }} }}";
             break;
           default:

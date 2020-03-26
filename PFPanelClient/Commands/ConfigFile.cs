@@ -20,23 +20,24 @@ namespace PFPanelClient.Commands
         {
           "_Comment" : "SwitchPanel Config File",
           "MapName" : "AnyNameWillDo",
+      	  "Macros"   : [MACRO,..],
           "SwitchMap": [
-              { "Input": "MASTER_BATT",       "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] },
-              { "Input": "MASTER_ALT",        "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] },
-              { "Input": "AVIONICS_MASTER",   "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] },
-              { "Input": "FUEL_PUMP",         "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] },
-              { "Input": "DE_ICE",            "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] },
-              { "Input": "PITOT_HEAT",        "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] },
-              { "Input": "GEAR",              "Cmd" : [ {COMMAND_on_up}, {COMMAND_off_down} ] },
-              { "Input": "COWL_CLOSE",        "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] },
-              { "Input": "PANEL",             "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] },
-              { "Input": "BEACON",            "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] },
-              { "Input": "NAV",               "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] },
-              { "Input": "STROBE",            "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] },
-              { "Input": "TAXI",              "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] },
-              { "Input": "LANDING",           "Cmd" : [ {COMMAND_on}, {COMMAND_off} ] }
+              { "Input": "MASTER_BATT",       "Cmd" : [ COMMAND_on, COMMAND_off ] },
+              { "Input": "MASTER_ALT",        "Cmd" : [ COMMAND_on, COMMAND_off ] },
+              { "Input": "AVIONICS_MASTER",   "Cmd" : [ COMMAND_on, COMMAND_off ] },
+              { "Input": "FUEL_PUMP",         "Cmd" : [ COMMAND_on, COMMAND_off ] },
+              { "Input": "DE_ICE",            "Cmd" : [ COMMAND_on, COMMAND_off ] },
+              { "Input": "PITOT_HEAT",        "Cmd" : [ COMMAND_on, COMMAND_off ] },
+              { "Input": "GEAR",              "Cmd" : [ COMMAND_on_up, COMMAND_off_down ] },
+              { "Input": "COWL_CLOSE",        "Cmd" : [ COMMAND_on, COMMAND_off ] },
+              { "Input": "PANEL",             "Cmd" : [ COMMAND_on, COMMAND_off ] },
+              { "Input": "BEACON",            "Cmd" : [ COMMAND_on, COMMAND_off ] },
+              { "Input": "NAV",               "Cmd" : [ COMMAND_on, COMMAND_off ] },
+              { "Input": "STROBE",            "Cmd" : [ COMMAND_on, COMMAND_off ] },
+              { "Input": "TAXI",              "Cmd" : [ COMMAND_on, COMMAND_off ] },
+              { "Input": "LANDING",           "Cmd" : [ COMMAND_on, COMMAND_off ] }
             ],
-          "Rotary": [{COMMAND_posOff}, {COMMAND_posR}, {COMMAND_posL}, {COMMAND_posAll}, {COMMAND_posStart}]
+          "Rotary": [COMMAND_posOff, COMMAND_posR, COMMAND_posL, COMMAND_posAll, COMMAND_posStart]
         }
         see below for COMMAND
     */
@@ -45,9 +46,11 @@ namespace PFPanelClient.Commands
     public string _Comment { get; set; }
     [DataMember( IsRequired = true )]
     public string MapName { get; set; }
-    [DataMember]
+    [DataMember] // optional
+    public List<MacroDef> Macros { get; set; } = new List<MacroDef>( );
+    [DataMember] // optional
     public List<ConfigItem> SwitchMap { get; set; } = new List<ConfigItem>( );
-    [DataMember]
+    [DataMember] // optional
     public List<Command> Rotary { get; set; } = new List<Command>( );
 
 
@@ -61,15 +64,25 @@ namespace PFPanelClient.Commands
     {
       get {
         var ret = new Dictionary<string, VJCommand>( );
-        foreach ( var sm in SwitchMap ) {
-          var cmd = sm.VJCommands( sm.Input ); // gets the On/Off commands for this Input
+        // Macros
+        foreach ( var mac in Macros ) {
+          var cmds = mac.VJCommands( );
           // ignore existing Inputs (don't complain...)
-          foreach ( var c in cmd ) {
+          foreach ( var c in cmds ) {
             if ( !ret.ContainsKey( c.Key ) )
               ret.Add( c.Key, c.Value );
           }
         }
-
+        // SwitchMap
+        foreach ( var sm in SwitchMap ) {
+          var cmds = sm.VJCommands( sm.Input ); // gets the On/Off commands for this Input
+          // ignore existing Inputs (don't complain...)
+          foreach ( var c in cmds ) {
+            if ( !ret.ContainsKey( c.Key ) )
+              ret.Add( c.Key, c.Value );
+          }
+        }
+        // Rotary
         int pos = 0;
         foreach ( var rc in Rotary ) {
           string Input = Consts.EnumRotaryState[pos].ToString( );
@@ -84,6 +97,32 @@ namespace PFPanelClient.Commands
       }
     }
 
+  }
+
+  [DataContract]
+  internal class MacroDef
+  {
+    /*
+        { "MName": "mName", "CmdList": [COMMAND] }  COMMAND or a list of COMMAND,COMMAND,...
+
+     */
+    [DataMember( IsRequired = true )]
+    public string MName { get; set; }
+    [DataMember( IsRequired = true )]
+    public List<Command> CmdList { get; set; } = new List<Command>( );
+
+    // non Json
+
+    public Dictionary<string, VJCommand> VJCommands()
+    {
+      string macroName = MName + VJCommand.MACRO;
+      var ret = new Dictionary<string, VJCommand>( );
+      foreach ( var cmd in CmdList ) {
+        ret.Add( macroName, cmd.VJCommand );
+        macroName += VJCommand.MACRO; // Macro Names are unique by adding the MACRO trailer..
+      }
+      return ret;
+    }
   }
 
 
@@ -122,7 +161,11 @@ namespace PFPanelClient.Commands
     /*
       COMMAND format:
 
-        Joystick:
+      Macros:
+	      Macro:    { "M": {"Macro": "mName" } }  
+	           - mName - a macro name defined in the Macros section
+
+      Joystick:
         Axis:     { "A": {"Direction": "X|Y|Z", "Value": number} }
                     - number => 0..1000 (normalized)
     
@@ -141,10 +184,13 @@ namespace PFPanelClient.Commands
                     - Mode optional - either of the chars (see below)
 
         Keyboard:
-        Key:      { "K": {"VKcode": "n", "Mode": "p|r|t|s|d", "Modifier": "mod", "Delay": 100, "LED": "disp" } }  
-                    - VKcode n=> 1..255 WinUser VK_.. (see separate Reference file)
-                    - Mode optional - either of the chars (see below)
-                    - Modifier optional - a set of codes (see below)
+          Key:      { "K": {"VKcodeEx": "keyName", "VKcode": n, "Mode": "p|r|t|s|d", "Modifier": "mod", "Delay": 100, "LED": "disp" } }  
+                      - VKcodeEx "s" either a number n=> 1..255 or a WinUser VK_.. literal (see separate Reference file)
+                      - VKcode n=> 1..255 WinUser VK_.. (see separate Reference file)
+                         if both are found the VKcodeEx item gets priority and the VKcode element is ignored
+                         if none is found the command is ignored
+                      - Mode optional - either of the chars (see below)
+                      - Modifier optional - a set of codes (see below)
 
          - Mode:     [mode]      (p)ress, (r)elease, (t)ap, (s)hort tap, (d)ouble tap           (default=tap - short tap is a tap with almost no delay)
          - Modifier: [mod[&mod]] (n)one, (lc)trl, (rc)trl, (la)lt, (ra)lt, (ls)hift, (rs)hift   (default=none - concat modifiers with & char)
@@ -156,6 +202,8 @@ namespace PFPanelClient.Commands
     */
 
     // either of the one below
+    [DataMember]
+    public CommandMacro M { get; set; }
     [DataMember]
     public CommandAxis A { get; set; }
     [DataMember]
@@ -174,6 +222,7 @@ namespace PFPanelClient.Commands
     public VJCommand VJCommand
     {
       get {
+        if ( M != null ) return M.Cmd;
         if ( A != null ) return A.Cmd;
         if ( R != null ) return R.Cmd;
         if ( S != null ) return S.Cmd;
@@ -206,58 +255,58 @@ namespace PFPanelClient.Commands
     protected void HandleLED( ref VJCommand cmd, string ledString )
     {
       if ( string.IsNullOrEmpty( ledString ) ) ledString = "n"; // none is default if nothing is given
-      switch ( ledString.ToUpperInvariant() ) {
+      switch ( ledString.ToUpperInvariant( ) ) {
         case "NO": // Nose Off
-          cmd.CtrlLed = PFSP_HID.PFSwPanelLeds.GEAR_N;
-          cmd.CtrlLedColor = PFSP_HID.PFSwPanelLedState.Led_Off;
+          cmd.CtrlLed = PFSwPanelLeds.GEAR_N;
+          cmd.CtrlLedColor = PFSwPanelLedState.Led_Off;
           break;
         case "NG": // Nose Green
-          cmd.CtrlLed = PFSP_HID.PFSwPanelLeds.GEAR_N;
-          cmd.CtrlLedColor = PFSP_HID.PFSwPanelLedState.Led_Green;
+          cmd.CtrlLed = PFSwPanelLeds.GEAR_N;
+          cmd.CtrlLedColor = PFSwPanelLedState.Led_Green;
           break;
         case "NR": // Nose Red
-          cmd.CtrlLed = PFSP_HID.PFSwPanelLeds.GEAR_N;
-          cmd.CtrlLedColor = PFSP_HID.PFSwPanelLedState.Led_Red;
+          cmd.CtrlLed = PFSwPanelLeds.GEAR_N;
+          cmd.CtrlLedColor = PFSwPanelLedState.Led_Red;
           break;
         case "NA": // Nose Amber
-          cmd.CtrlLed = PFSP_HID.PFSwPanelLeds.GEAR_N;
-          cmd.CtrlLedColor = PFSP_HID.PFSwPanelLedState.Led_Amber;
+          cmd.CtrlLed = PFSwPanelLeds.GEAR_N;
+          cmd.CtrlLedColor = PFSwPanelLedState.Led_Amber;
           break;
         case "LO": // Left Off
-          cmd.CtrlLed = PFSP_HID.PFSwPanelLeds.GEAR_L;
-          cmd.CtrlLedColor = PFSP_HID.PFSwPanelLedState.Led_Off;
+          cmd.CtrlLed = PFSwPanelLeds.GEAR_L;
+          cmd.CtrlLedColor = PFSwPanelLedState.Led_Off;
           break;
         case "LG": // Left Green
-          cmd.CtrlLed = PFSP_HID.PFSwPanelLeds.GEAR_L;
-          cmd.CtrlLedColor = PFSP_HID.PFSwPanelLedState.Led_Green;
+          cmd.CtrlLed = PFSwPanelLeds.GEAR_L;
+          cmd.CtrlLedColor = PFSwPanelLedState.Led_Green;
           break;
         case "LR": // Left Red
-          cmd.CtrlLed = PFSP_HID.PFSwPanelLeds.GEAR_L;
-          cmd.CtrlLedColor = PFSP_HID.PFSwPanelLedState.Led_Red;
+          cmd.CtrlLed = PFSwPanelLeds.GEAR_L;
+          cmd.CtrlLedColor = PFSwPanelLedState.Led_Red;
           break;
         case "LA": // Left Amber
-          cmd.CtrlLed = PFSP_HID.PFSwPanelLeds.GEAR_L;
-          cmd.CtrlLedColor = PFSP_HID.PFSwPanelLedState.Led_Amber;
+          cmd.CtrlLed = PFSwPanelLeds.GEAR_L;
+          cmd.CtrlLedColor = PFSwPanelLedState.Led_Amber;
           break;
         case "RO": // Right Off
-          cmd.CtrlLed = PFSP_HID.PFSwPanelLeds.GEAR_R;
-          cmd.CtrlLedColor = PFSP_HID.PFSwPanelLedState.Led_Off;
+          cmd.CtrlLed = PFSwPanelLeds.GEAR_R;
+          cmd.CtrlLedColor = PFSwPanelLedState.Led_Off;
           break;
         case "RG": // Right Green
-          cmd.CtrlLed = PFSP_HID.PFSwPanelLeds.GEAR_R;
-          cmd.CtrlLedColor = PFSP_HID.PFSwPanelLedState.Led_Green;
+          cmd.CtrlLed = PFSwPanelLeds.GEAR_R;
+          cmd.CtrlLedColor = PFSwPanelLedState.Led_Green;
           break;
         case "RR": // Right Red
-          cmd.CtrlLed = PFSP_HID.PFSwPanelLeds.GEAR_R;
-          cmd.CtrlLedColor = PFSP_HID.PFSwPanelLedState.Led_Red;
+          cmd.CtrlLed = PFSwPanelLeds.GEAR_R;
+          cmd.CtrlLedColor = PFSwPanelLedState.Led_Red;
           break;
         case "RA": // Right Amber
-          cmd.CtrlLed = PFSP_HID.PFSwPanelLeds.GEAR_R;
-          cmd.CtrlLedColor = PFSP_HID.PFSwPanelLedState.Led_Amber;
+          cmd.CtrlLed = PFSwPanelLeds.GEAR_R;
+          cmd.CtrlLedColor = PFSwPanelLedState.Led_Amber;
           break;
         default: // none
-          cmd.CtrlLed = PFSP_HID.PFSwPanelLeds.GEAR_NONE;
-          cmd.CtrlLedColor = PFSP_HID.PFSwPanelLedState.Led_Off;
+          cmd.CtrlLed = PFSwPanelLeds.GEAR_NONE;
+          cmd.CtrlLedColor = PFSwPanelLedState.Led_Off;
           break;
       }
     }
@@ -265,7 +314,7 @@ namespace PFPanelClient.Commands
     protected void HandleMode( ref VJCommand cmd, string modeString )
     {
       if ( string.IsNullOrEmpty( modeString ) ) modeString = "t"; // Tap is default if nothing is given
-      switch ( modeString.ToLowerInvariant() ) {
+      switch ( modeString.ToLowerInvariant( ) ) {
         case "p": // pressed
           cmd.CtrlDirection = VJ_ControllerDirection.VJ_Down;
           break;
@@ -290,6 +339,36 @@ namespace PFPanelClient.Commands
     }
 
 
+  }
+
+  /// <summary>
+  /// Macro Command
+  /// </summary>
+  [DataContract]
+  internal class CommandMacro : CommandBase
+  {
+    /*
+	      Macro:    { "M": {"Macro": "mName" } }  
+	           - mName - a macro name defined in the Macros section
+    */
+    [DataMember( IsRequired = true )]
+    public string Macro { get; set; }
+    [DataMember]
+    public string LED { get; set; }
+
+    // non Json
+    public override VJCommand Cmd
+    {
+      get {
+        var retVal = new VJCommand( );
+
+        retVal.CtrlString = Macro;
+        retVal.CtrlType = VJ_ControllerType.VX_Macro;
+        HandleLED( ref retVal, LED );
+
+        return retVal;
+      }
+    }
   }
 
   /// <summary>
@@ -531,12 +610,18 @@ namespace PFPanelClient.Commands
   internal class CommandKey : CommandBase
   {
     /*
-        Button:   { "B": {"Index": n, "Mode": "p|r|t|s|d", "Delay":100, "LED": "disp" } } 
-                    - Button Index n => 1..VJ_MAXBUTTON (setup of vJoy)
-                    - Mode optional - either of the chars (see below)
+          Key:      { "K": {"VKcodeEx": "keyName", "VKcode": n, "Mode": "p|r|t|s|d", "Modifier": "mod", "Delay": 100, "LED": "disp" } }  
+                      - VKcodeEx "s" either a number n=> 1..255 or a WinUser VK_.. literal (see separate Reference file)
+                      - VKcode n=> 1..255 WinUser VK_.. (see separate Reference file)
+                         if both are found the VKcodeEx item gets priority and the VKcode element is ignored
+                         if none is found the command is ignored
+                      - Mode optional - either of the chars (see below)
+                      - Modifier optional - a set of codes (see below)
     */
-    [DataMember( IsRequired = true )]
-    public string VKcode { get; set; }
+    [DataMember]
+    public string VKcodeEx { get; set; }
+    [DataMember]
+    public int VKcode { get; set; } = 0;
     [DataMember]
     public string Mode { get; set; }
     [DataMember]
@@ -553,12 +638,17 @@ namespace PFPanelClient.Commands
         var retVal = new VJCommand( );
 
         // either a number or a keyname
-        if ( int.TryParse( VKcode, out int code ) ) {
-          retVal.CtrlIndex = code;
+        if ( !string.IsNullOrEmpty( VKcodeEx ) ) {
+          if ( int.TryParse( VKcodeEx, out int code ) ) {
+            VKcode = code; // VKcodeEx has priority
+          }
+          else {
+            VKcode = SCdxKeycodes.KeyCodeFromKeyName( VKcodeEx );
+          }
         }
-        else {
-          retVal.CtrlIndex = SCdxKeycodes.KeyCodeFromKeyName( VKcode );
-        }
+        // merged VKCodeEx into VKcode if it was supplied
+        retVal.CtrlIndex = VKcode;
+
         if ( ( retVal.CtrlIndex < 1 ) || ( retVal.CtrlIndex > 0xff ) ) {
           return retVal; // ERROR - bail out on invalid number
         }

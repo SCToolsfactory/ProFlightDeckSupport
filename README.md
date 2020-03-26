@@ -5,7 +5,7 @@ Support for HID devices of the Pro Flight Panel series<br>
 <br>
 NOTE: THIS _ IS _ VERY _ EARLY _ WORK _ IN _ PROGRESS _ IT _ MAY _ JUST _ BREAK _ AT _ ANY _ TIME ;-)<br>
 
-# PFPanelClient V1.0 an SCJoyServer Client
+# PFPanelClient V1.2 an SCJoyServer Client
 
 Intends to connect to an SCJoyServer 
 see: https://github.com/SCToolsfactory/SCJoyServer
@@ -20,14 +20,14 @@ See: https://github.com/SCToolsfactory/SCJoyServer <br>
 In order to use the program one has to add the driver DLLs <br>
 <br>
 Just within the application Exe folder:<br>
-PFPanelClient.exe            The program (V1.10<br>
+PFPanelClient.exe            The program<br>
 PFSP_HID.dll                 HID Support DLL<br>
 HidLibrary.dll               HID Access Library<br>
 <br>
 For convenience find them in the SupportingBinaries as zip<br>
 <br>
 
-# ProFlightPanelSupport V 1.1 the standalone program
+# ProFlightPanelSupport V 1.2 the standalone program
 
 Provides a small standalone program to enable the Pro Flight Switch Panel acting as vJoy and/or Keyboard<br>
 Actuates ONE vJoy virtual Joystick and supplies keystrokes to the active window<br>
@@ -51,7 +51,7 @@ You may map the Virtual Joystick like any real one into SC by using e.g. SCJMapp
 In order to use the program one has to add the driver DLLs <br>
 <br>
 Just within the application Exe folder:<br>
-ProFlightPanelSupport.exe    The program (V1.1)<br>
+ProFlightPanelSupport.exe    The program<br>
 PFSP_HID.dll                 HID Support DLL<br>
 HidLibrary.dll               HID Access Library<br>
 x64\SCdxKeyboard.dll   (64bit)<br>

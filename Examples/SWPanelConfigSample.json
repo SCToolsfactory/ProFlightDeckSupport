@@ -1,6 +1,16 @@
 {
   "_Comment" : "SwitchPanel Config File",
-  "MapName" : "SwitchPanel Sample Config File",
+  "MapName": "SwitchPanel Sample Config File",
+  "Macros": [
+      {
+          "MName": "_MacroOn",
+          "CmdList": [ { "A": {"Direction": "X", "Value": 1000}}, { "A": {"Direction": "Y", "Value": 1000}} ]
+      },
+      {
+          "MName": "_MacroOff",
+          "CmdList": [ { "A": {"Direction": "X", "Value": 0}}, { "A": {"Direction": "Y", "Value": 0}} ]
+      }
+    ],
   "SwitchMap": [
       { "Input": "MASTER_BATT",       "Cmd" : [ { "B": {"Index": 10 }}, { "B": {"Index":1 }} ] },
       { "Input": "MASTER_ALT",        "Cmd" : [ { "B": {"Index": 2, "Mode": "t"}}, { "B": {"Index": 2, "Mode":"t"}} ] },
@@ -11,11 +21,11 @@
       { "Input": "GEAR",              "Cmd" : [ { "B": {"Index": 1, "Mode": "t"}}, { "B": {"Index":1, "Mode":"t"}} ] },
       { "Input": "COWL_CLOSE",        "Cmd" : [ { "P": {"Index": 1, "Direction": "u", "LED": "NA" }},{ "P": {"Index": 1, "Direction": "c", "LED": "NO" }} ] },
       { "Input": "PANEL",             "Cmd" : [ { "B": {"Index": 1, "Mode": "t"}}, { "B": {"Index":1, "Mode":"t"}} ] },
-      { "Input": "BEACON",            "Cmd" : [ { "B": {"Index": 1, "Mode": "t"}}, { "B": {"Index":1, "Mode":"t"}} ] },
-      { "Input": "NAV",               "Cmd" : [ { "K": {"VKcode": "VK_NUMPADSLASH" }}, { "K": {"VKcode": "VK_NUMPADENTER" }} ] },
+      { "Input": "BEACON",            "Cmd" : [ { "M": {"Macro": "_MacroOn", "LED": "RG"}}, { "M": {"Macro": "_MacroOff", "LED": "RO"}} ] },
+      { "Input": "NAV",               "Cmd" : [ { "K": {"VKcodeEx": "VK_NUMPADSLASH" }}, { "K": {"VKcodeEx": "VK_NUMPADENTER" }} ] },
       { "Input": "STROBE",            "Cmd" : [ { "B": {"Index": 1, "Mode": "t", "LED": "LG" }}, { "B": {"Index":1, "Mode":"t", "LED": "LO"}} ] },
-      { "Input": "TAXI",              "Cmd" : [ { "K": {"VKcode": "VK_Y" }}, { "K": {"VKcode": "VK_Z" }} ] },
-      { "Input": "LANDING",           "Cmd" : [ { "K": {"VKcode": "VK_A", "Modifier": "ls" }}, { "K": {"VKcode": "VK_B", "Modifier": "ls&rs" }} ] }
+      { "Input": "TAXI",              "Cmd" : [ { "K": {"VKcodeEx": "VK_Y" }}, { "K": {"VKcodeEx": "VK_Z" }} ] },
+      { "Input": "LANDING",           "Cmd" : [ { "K": {"VKcodeEx": "VK_A", "Modifier": "ls" }}, { "K": {"VKcodeEx": "VK_B", "Modifier": "ls&rs" }} ] }
     ],
   "Rotary": [
       { "R": {"Direction": "Z", "Value": 0}},

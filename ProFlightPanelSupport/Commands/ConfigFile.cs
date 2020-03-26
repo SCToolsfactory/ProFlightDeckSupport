@@ -141,10 +141,13 @@ namespace ProFlightPanelSupport.Commands
                     - Mode optional - either of the chars (see below)
 
         Keyboard:
-        Key:      { "K": {"VKcode": n, "Mode": "p|r|t|s|d", "Modifier": "mod", "Delay": 100, "LED": "disp" } }  
-                    - VKcode n=> 1..255 WinUser VK_.. (see separate Reference file)
-                    - Mode optional - either of the chars (see below)
-                    - Modifier optional - a set of codes (see below)
+          Key:      { "K": {"VKcodeEx": "keyName", "VKcode": n, "Mode": "p|r|t|s|d", "Modifier": "mod", "Delay": 100, "LED": "disp" } }  
+                      - VKcodeEx "s" either a number n=> 1..255 or a WinUser VK_.. literal (see separate Reference file)
+                      - VKcode n=> 1..255 WinUser VK_.. (see separate Reference file)
+                         if both are found the VKcodeEx item gets priority and the VKcode element is ignored
+                         if none is found the command is ignored
+                      - Mode optional - either of the chars (see below)
+                      - Modifier optional - a set of codes (see below)
 
          - Mode:     [mode]      (p)ress, (r)elease, (t)ap, (s)hort tap, (d)ouble tap           (default=tap - short tap is a tap with almost no delay)
          - Modifier: [mod[&mod]] (n)one, (lc)trl, (rc)trl, (la)lt, (ra)lt, (ls)hift, (rs)hift   (default=none - concat modifiers with & char)
@@ -531,12 +534,18 @@ namespace ProFlightPanelSupport.Commands
   internal class CommandKey : CommandBase
   {
     /*
-        Button:   { "B": {"Index": n, "Mode": "p|r|t|s|d", "Delay":100, "LED": "disp" } } 
-                    - Button Index n => 1..VJ_MAXBUTTON (setup of vJoy)
-                    - Mode optional - either of the chars (see below)
+          Key:      { "K": {"VKcodeEx": "keyName", "VKcode": n, "Mode": "p|r|t|s|d", "Modifier": "mod", "Delay": 100, "LED": "disp" } }  
+                      - VKcodeEx "s" either a number n=> 1..255 or a WinUser VK_.. literal (see separate Reference file)
+                      - VKcode n=> 1..255 WinUser VK_.. (see separate Reference file)
+                         if both are found the VKcodeEx item gets priority and the VKcode element is ignored
+                         if none is found the command is ignored
+                      - Mode optional - either of the chars (see below)
+                      - Modifier optional - a set of codes (see below)
     */
-    [DataMember( IsRequired = true )]
-    public string VKcode { get; set; }
+    [DataMember]
+    public string VKcodeEx { get; set; }
+    [DataMember]
+    public int VKcode { get; set; } = 0;
     [DataMember]
     public string Mode { get; set; }
     [DataMember]
@@ -553,12 +562,17 @@ namespace ProFlightPanelSupport.Commands
         var retVal = new VJCommand( );
 
         // either a number or a keyname
-        if ( int.TryParse( VKcode, out int code ) ) {
-          retVal.CtrlIndex = code;
+        if ( !string.IsNullOrEmpty( VKcodeEx ) ) {
+          if ( int.TryParse( VKcodeEx, out int code ) ) {
+            VKcode = code; // VKcodeEx has priority
+          }
+          else {
+            VKcode = SCdxKeycodes.KeyCodeFromKeyName( VKcodeEx );
+          }
         }
-        else {
-          retVal.CtrlIndex = SCdxKeycodes.KeyCodeFromKeyName( VKcode );
-        }
+        // merged VKCodeEx into VKcode if it was supplied
+        retVal.CtrlIndex = VKcode;
+
         if ( ( retVal.CtrlIndex < 1 ) || ( retVal.CtrlIndex > 0xff ) ) {
           return retVal; // ERROR - bail out on invalid number
         }
