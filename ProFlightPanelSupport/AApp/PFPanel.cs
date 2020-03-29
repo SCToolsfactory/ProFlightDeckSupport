@@ -1,32 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using PFPanelClient.SwitchPanel;
+using dxKbdInterfaceWrap;
+using ProFlightPanelSupport.SwitchPanel;
 
-namespace PFPanelClient
+namespace ProFlightPanelSupport
 {
-  public partial class PFPClientFrm : Form
+  public partial class PFPanel : Form
   {
-
-    private const string AppName = "Pro Flight Panel - SCJoyClient";
 
     private bool m_cancelPending = false;
     private bool m_reportEvents = false;
 
-
     #region Form Handling
-
-    private string IconStringRunning { get => $"{AppName}\nService active"; }
-    private string IconStringStopped { get => $"{AppName}\nService stopped"; }
-    private string IconStringIdle { get => $"{AppName}\nService idle"; }
 
     /// <summary>
     /// Checks if a rectangle is visible on any screen
@@ -44,12 +33,14 @@ namespace PFPanelClient
       return false;
     }
 
-    public PFPClientFrm()
+
+
+    public PFPanel()
     {
       InitializeComponent( );
     }
 
-    private void PFPClientFrm_Load( object sender, EventArgs e )
+    private void PFPanel_Load( object sender, EventArgs e )
     {
 
       AppSettings.Instance.Reload( );
@@ -64,30 +55,65 @@ namespace PFPanelClient
       //lblTitle.Text += " - V " + version.Substring( 0, version.IndexOf( ".", version.IndexOf( "." ) + 1 ) ); // PRODUCTION
       lblVersion.Text = "Version: " + version + " beta"; // BETA
 
-      ICON.Text = IconStringIdle;
-
-      txLocIP.Text = AppSettings.Instance.ServerIP;
-      txPort.Text = AppSettings.Instance.ServerPort;
-
       string s = AppSettings.Instance.ConfigFile;
       if ( !string.IsNullOrEmpty( s ) && File.Exists( s ) ) {
         txConfigFile.Text = s;
       }
 
       btStopService.Enabled = false;
+
+      // vJoy DLL
+      cbxJoystick.Items.Clear( );
+      lblVJoy.Text = "not available";
+      if ( vJoyInterfaceWrap.vJoy.isDllLoaded ) {
+        var tvJoy = new vJoyInterfaceWrap.vJoy( );
+        for ( uint i = 1; i <= 16; i++ ) {
+          if ( tvJoy.isVJDExists( i ) ) {
+            cbxJoystick.Items.Add( $"Joystick#{i}" );
+          }
+        }
+        if ( cbxJoystick.Items.Count > 0 ) {
+          cbxJoystick.SelectedIndex = 0;
+          // select the one in AppSettings
+          string[] js = AppSettings.Instance.JoystickUsed.Split( new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries ); // a list
+          for ( int i = 0; i < js.Length; i++ ) {
+            var idx = cbxJoystick.Items.IndexOf( js[i] );
+            if ( idx >= 0 ) {
+              cbxJoystick.SetItemChecked( idx, true );
+            }
+          }
+        }
+        lblVJoy.Text = $"loaded   - {cbxJoystick.Items.Count:#} device(s)";
+        tvJoy = null;
+      }
+      // Kbd DLL
+      if ( SCdxKeyboard.isDllLoaded ) {
+        lblSCdx.Text = "loaded";
+        cbxKBon.Enabled = true;
+        cbxKBon.Checked = AppSettings.Instance.UseKeyboard;
+      }
+      else {
+        lblSCdx.Text = "not available";
+        cbxKBon.Checked = false;
+        cbxKBon.Enabled = false;
+      }
+
     }
 
-    private void PFPClientFrm_FormClosing( object sender, FormClosingEventArgs e )
+    private void PFPanel_FormClosing( object sender, FormClosingEventArgs e )
     {
       if ( m_cancelPending ) return; // had a call before - so just die now
-      ICON.Text = IconStringStopped;
 
       // don't record minimized, maximized forms
       if ( this.WindowState == FormWindowState.Normal ) {
         AppSettings.Instance.FormLocation = this.Location;
       }
-      AppSettings.Instance.ServerIP = txLocIP.Text;
-      AppSettings.Instance.ServerPort = txPort.Text;
+      AppSettings.Instance.UseKeyboard = cbxKBon.Checked;
+      string s = "";
+      foreach ( var cl in cbxJoystick.CheckedItems ) {
+        s += cl.ToString( ) + " ";
+      }
+      AppSettings.Instance.JoystickUsed = s;
       AppSettings.Instance.ReportEvents = cbxReport.Checked;
       AppSettings.Instance.Save( );
 
@@ -98,7 +124,13 @@ namespace PFPanelClient
       }
     }
 
+    private void PFPanel_FormClosed( object sender, FormClosedEventArgs e )
+    {
+
+    }
+
     #endregion
+
 
     #region BGW Hid
 
@@ -137,34 +169,46 @@ namespace PFPanelClient
       }
       btStartService.Enabled = true;
       btStopService.Enabled = false;
-      ICON.Text = IconStringIdle;
-
+      cbxJoystick.Enabled = true;
     }
 
     #endregion
 
     private void btStartService_Click( object sender, EventArgs e )
     {
+      if ( cbxJoystick.CheckedIndices.Count < 1 ) {
+        RTB.Text += "ERROR: No Joystick selected - cannot start";
+        return;
+      }
+
       btStartService.Enabled = false;
+      cbxJoystick.Enabled = false;
       // prepare context
       m_switchPanelSupport.LedChanged = false;
-      m_switchPanelSupport.ServerIP = txLocIP.Text;
-      m_switchPanelSupport.ServerPort = txPort.Text;
+      m_switchPanelSupport.JoystickNo = 0;
       m_switchPanelSupport.ConfigFile = txConfigFile.Text;
-
+      var jsx = cbxJoystick.CheckedItems[0];
+      string[] js = ( jsx as string ).Split( new char[] { '#' } );
+      if ( js.Length > 1 ) {
+        m_switchPanelSupport.JoystickNo = int.Parse( js[1] );
+      }
       RTB.Text = $"Starting Service\n";
       // START
       BGW_Hid.RunWorkerAsync( m_switchPanelSupport );
-      ICON.Text = IconStringRunning;
+
       btStopService.Enabled = true;
     }
 
     private void btStopService_Click( object sender, EventArgs e )
     {
       btStopService.Enabled = false;
-      ICON.Text = IconStringStopped;
       BGW_Hid.CancelAsync( );
+    }
 
+    private void cbxNLed_CheckedChanged( object sender, EventArgs e )
+    {
+      m_switchPanelSupport.N_Led = ( cbxNLed.Checked ) ? PFSP_HID.PFSwPanelLedState.Led_Green : PFSP_HID.PFSwPanelLedState.Led_Off;
+      m_switchPanelSupport.LedChanged = true; // trigger change
     }
 
     private void btLoadConfigFile_Click( object sender, EventArgs e )
@@ -183,19 +227,20 @@ namespace PFPanelClient
       m_reportEvents = cbxReport.Checked;
     }
 
-    private void btMyIP_Click( object sender, EventArgs e )
+    private void cbxKBon_CheckedChanged( object sender, EventArgs e )
     {
-      txLocIP.Text = Protocol.UdpMessenger.GetLocalIP( );
+      if ( SCdxKeyboard.isDllLoaded )
+        SCdxKeyboard.Enabled = cbxKBon.Checked;
     }
 
-    private void ICON_DoubleClick( object sender, EventArgs e )
+    private void cbxJoystick_ItemCheck( object sender, ItemCheckEventArgs e )
     {
-      // Show the form when the user double clicks on the notify icon.
-      if ( this.WindowState == FormWindowState.Minimized )
-        this.WindowState = FormWindowState.Normal;
-
-      // Activate the form.
-      this.Activate( );
+      // if a new one is checked, others get unchecked..
+      if ( e.NewValue == CheckState.Checked ) {
+        foreach ( int i in cbxJoystick.CheckedIndices ) {
+          if ( i != e.Index ) cbxJoystick.SetItemChecked( i, false );
+        }
+      }
     }
 
 

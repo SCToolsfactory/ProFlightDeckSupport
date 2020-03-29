@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
-using PFSP_HID;
-using PFPanelClient.Commands;
 using PFPanelClient.Protocol;
+using PFSP_HID;
+using vjMapper.JInput;
 
 namespace PFPanelClient.SwitchPanel
 {
@@ -80,6 +76,7 @@ namespace PFPanelClient.SwitchPanel
         }
         else {
           m_worker.ReportProgress( 0, $" Invalid Config File - aborting" ); // first message..
+          m_worker.ReportProgress( 0, $"   {SwitchPanelConfig.ErrorMsg}" ); // first message..
           abort = true;
         }
       }
@@ -145,12 +142,6 @@ namespace PFPanelClient.SwitchPanel
 
     #region HID device events (note this runs in the BGWorker thread !!!
 
-    private void HandleLed( PFSwPanelLeds led, PFSwPanelLedState state )
-    {
-      if ( led == PFSwPanelLeds.GEAR_NONE ) return;
-
-      m_pfspManager.SetLed( led, state );
-    }
 
     private void PfspManager_DeviceAttached( object sender, EventArgs e )
     {
@@ -169,12 +160,12 @@ namespace PFPanelClient.SwitchPanel
       m_worker.ReportProgress( 50, $"SwitchPanelSupport - Rotary changed to {e.State.RotaryState( ).ToString( )}" );
       if ( m_udp == null ) return;
 
-      string key = e.State.RotaryState( ).ToString( );
+      string key = InputRotary.Rotary_Pos( "ROTARY", (int)e.State.RotaryState( ) );
       if ( m_panelConfig.VJCommands.ContainsKey( key ) ) {
         var cmd = m_panelConfig.VJCommands[key];
         if ( cmd.IsValid ) {
           m_udp.SendMsg( cmd.JString );
-          HandleLed( cmd.CtrlLed, cmd.CtrlLedColor );
+          SwitchPanelLed.HandleLed( cmd.CtrlExt1, m_pfspManager );
         }
       }
     }
@@ -184,12 +175,12 @@ namespace PFPanelClient.SwitchPanel
       m_worker.ReportProgress( 50, $"SwitchPanelSupport - {e.Switch.ToString( )} Down" ); // kind of debug only
       if ( m_udp == null ) return;
 
-      string key = PanelCommand.Input_Off( e.Switch.ToString( ) );
+      string key =  InputSwitch.Input_Off( e.Switch.ToString() );
       if ( m_panelConfig.VJCommands.ContainsKey( key ) ) {
         var cmd = m_panelConfig.VJCommands[key];
         if ( cmd.IsValid ) {
           m_udp.SendMsg( cmd.JString );
-          HandleLed( cmd.CtrlLed, cmd.CtrlLedColor );
+          SwitchPanelLed.HandleLed( cmd.CtrlExt1, m_pfspManager );
         }
       }
     }
@@ -199,12 +190,12 @@ namespace PFPanelClient.SwitchPanel
       m_worker.ReportProgress( 50, $"SwitchPanelSupport - {e.Switch.ToString( )} Up" );
       if ( m_udp == null ) return;
 
-      string key = PanelCommand.Input_On( e.Switch.ToString( ) );
+      string key = InputSwitch.Input_On( e.Switch.ToString() );
       if ( m_panelConfig.VJCommands.ContainsKey( key ) ) {
         var cmd = m_panelConfig.VJCommands[key];
         if ( cmd.IsValid ) {
           m_udp.SendMsg( cmd.JString );
-          HandleLed( cmd.CtrlLed, cmd.CtrlLedColor );
+          SwitchPanelLed.HandleLed( cmd.CtrlExt1, m_pfspManager );
         }
       }
     }

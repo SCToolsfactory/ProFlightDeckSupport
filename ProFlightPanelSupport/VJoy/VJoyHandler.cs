@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using vJoyInterfaceWrap;
-using static vJoyInterfaceWrap.vJoyData;
+﻿using vJoyInterfaceWrap;
 using dxKbdInterfaceWrap;
 using static dxKbdInterfaceWrap.SCdxKeyboard;
 
-using ProFlightPanelSupport.Commands;
+using vjMapper.VjOutput;
 
 namespace ProFlightPanelSupport.VJoy
 {
@@ -28,13 +21,35 @@ namespace ProFlightPanelSupport.VJoy
     private vJoystick m_vJoystick; // my virtual JS
     private uint m_jsId = 0; // invalid
 
+    /// <summary>
+    /// Check if Kbd and vJoy are available
+    /// </summary>
+    /// <returns>Returns true if Kbd and vJoy are available</returns>
+    public bool AreLibrariesLoaded()
+    {
+      bool ret = true;
+      ret &= vJoy.isDllLoaded;
+      ret &= SCdxKeyboard.isDllLoaded;
+      return ret;
+    }
+
+    /// <summary>
+    /// Return the connection joystick state
+    /// </summary>
     public bool Connected { get; private set; } = false;
 
+    /// <summary>
+    /// Connect to a Joystick instance
+    /// </summary>
+    /// <param name="n">The joystick ID 1..16</param>
+    /// <returns>True if successfull</returns>
     public bool Connect( int n )
     {
       if ( Connected ) return true; // already connected
       try {
-        if ( n <= 0 || n > 16 ) return false; // ERROR exit
+        if ( !vJoy.isDllLoaded ) return false; // ERROR exit DLL not loaded
+
+        if ( n <= 0 || n > 16 ) return false; // ERROR exit invalid Joystick ID
         m_jsId = (uint)n;
         m_joystick = new vJoy( );
         if ( !m_joystick.vJoyEnabled( ) ) {
@@ -114,11 +129,12 @@ namespace ProFlightPanelSupport.VJoy
     /// <param name="message">A VJoy Message</param>
     public bool HandleMessage( VJCommand message )
     {
-      if ( !message.IsValid ) return false; // ERROR - bail out for unde messages
+      if ( !AreLibrariesLoaded() ) return false; // ERROR - bail out for missing libraries
+      if ( !message.IsValid ) return false; // ERROR - bail out for undef messages
 
       bool retVal = false;
 
-      if ( message.IsVJoyMessage ) {
+      if ( message.IsVJoyCommand ) {
         // mutual exclusive access to the device
         if ( !Connected ) return false; // bail out if vJoy is not available
 
@@ -203,16 +219,16 @@ namespace ProFlightPanelSupport.VJoy
                     break;
                   case VJ_ControllerDirection.VJ_Tap:
                     m_vJoystick.SetButton( message.CtrlIndex, true );
-                    Sleep_ms( (uint)message.CtrlValue );
+                    Sleep_ms( (uint)message.CtrlDelay );
                     m_vJoystick.SetButton( message.CtrlIndex, false );
                     break;
                   case VJ_ControllerDirection.VJ_DoubleTap:
                     m_vJoystick.SetButton( message.CtrlIndex, true );
-                    Sleep_ms( (uint)message.CtrlValue ); // tap delay
+                    Sleep_ms( (uint)message.CtrlDelay ); // tap delay
                     m_vJoystick.SetButton( message.CtrlIndex, false );
                     Sleep_ms( 25 ); // double tap delay is fixed
                     m_vJoystick.SetButton( message.CtrlIndex, true );
-                    Sleep_ms( (uint)message.CtrlValue ); // tap delay
+                    Sleep_ms( (uint)message.CtrlDelay ); // tap delay
                     m_vJoystick.SetButton( message.CtrlIndex, false );
                     break;
                   default:
@@ -238,25 +254,25 @@ namespace ProFlightPanelSupport.VJoy
         if ( message.CtrlType == VJ_ControllerType.DX_Key ) {
           switch ( message.CtrlDirection ) {
             case VJ_ControllerDirection.VJ_Down:
-              foreach(var m in message.CtrlModifier )  Modifier( m, true );
+              foreach ( var m in message.CtrlModifier ) Modifier( m, true );
               KeyDown( message.CtrlIndex );
               break;
             case VJ_ControllerDirection.VJ_Up:
               KeyUp( message.CtrlIndex );
-              foreach ( var m in message.CtrlModifier )  Modifier( m, false );
+              foreach ( var m in message.CtrlModifier ) Modifier( m, false );
               break;
             case VJ_ControllerDirection.VJ_Tap:
               foreach ( var m in message.CtrlModifier ) Modifier( m, true );
-              KeyStroke( message.CtrlIndex, (uint)message.CtrlValue );
+              KeyStroke( message.CtrlIndex, (uint)message.CtrlDelay );
               foreach ( var m in message.CtrlModifier ) Modifier( m, false );
               break;
             case VJ_ControllerDirection.VJ_DoubleTap:
               foreach ( var m in message.CtrlModifier ) Modifier( m, true );
-              KeyStroke( message.CtrlIndex, (uint)message.CtrlValue );
+              KeyStroke( message.CtrlIndex, (uint)message.CtrlDelay );
               foreach ( var m in message.CtrlModifier ) Modifier( m, false );
               Sleep_ms( 25 ); // double tap delay is fixed
               foreach ( var m in message.CtrlModifier ) Modifier( m, true );
-              KeyStroke( message.CtrlIndex, (uint)message.CtrlValue );
+              KeyStroke( message.CtrlIndex, (uint)message.CtrlDelay );
               foreach ( var m in message.CtrlModifier ) Modifier( m, false );
               break;
             default:

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using vJoyInterfaceWrap;
+﻿using vJoyInterfaceWrap;
 
 namespace ProFlightPanelSupport.VJoy
 {
@@ -88,7 +82,7 @@ namespace ProFlightPanelSupport.VJoy
 
     private xState GetState( HID_USAGES usage, int pindex = 0 )
     {
-      xState ret = new xState { usage = usage, current = 0 };
+      var ret = new xState { usage = usage, current = 0 };
 
       if ( usage == HID_USAGES.HID_USAGE_POV ) {
         ret.has = ( pindex > 0 && pindex <= m_nPov );

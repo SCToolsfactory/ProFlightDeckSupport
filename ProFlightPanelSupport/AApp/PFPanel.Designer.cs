@@ -46,8 +46,8 @@
       this.label4 = new System.Windows.Forms.Label();
       this.lblVersion = new System.Windows.Forms.Label();
       this.groupBox1 = new System.Windows.Forms.GroupBox();
-      this.cbxReport = new System.Windows.Forms.CheckBox();
       this.label2 = new System.Windows.Forms.Label();
+      this.cbxReport = new System.Windows.Forms.CheckBox();
       this.groupBox3.SuspendLayout();
       this.groupBox1.SuspendLayout();
       this.SuspendLayout();
@@ -236,6 +236,15 @@
       this.groupBox1.TabStop = false;
       this.groupBox1.Text = "Service";
       // 
+      // label2
+      // 
+      this.label2.AutoSize = true;
+      this.label2.Location = new System.Drawing.Point(146, 101);
+      this.label2.Name = "label2";
+      this.label2.Size = new System.Drawing.Size(237, 13);
+      this.label2.TabIndex = 10;
+      this.label2.Text = "If the service does not stop, toggle a switch..";
+      // 
       // cbxReport
       // 
       this.cbxReport.AutoSize = true;
@@ -246,15 +255,6 @@
       this.cbxReport.Text = "Report Events";
       this.cbxReport.UseVisualStyleBackColor = true;
       this.cbxReport.CheckedChanged += new System.EventHandler(this.cbxReport_CheckedChanged);
-      // 
-      // label2
-      // 
-      this.label2.AutoSize = true;
-      this.label2.Location = new System.Drawing.Point(146, 101);
-      this.label2.Name = "label2";
-      this.label2.Size = new System.Drawing.Size(237, 13);
-      this.label2.TabIndex = 10;
-      this.label2.Text = "If the service does not stop, toggle a switch..";
       // 
       // PFPanel
       // 

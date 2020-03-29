@@ -21,10 +21,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 -----------------------------------------------------------------------------------
-The vJoy wrapper contains code copy from the vJoy Wrapper for CS.
- MIT License
- Copyright( c) 2017 Shaul Eizikovich
------------------------------------------------------------------------------------
 HidLibrary.dll binary copy via NuGet from:
 https://github.com/mikeobrien/HidLibrary
 The PFSP_HID.DLL contains some code copy and adoptions from:

@@ -5,7 +5,7 @@ Logitech (Saitek) Pro Flight Switch Panel:
     {
       "_Comment" : "SwitchPanel Config File",
       "MapName"  : "AnyNameWillDo",
-	  "Macros"   : [MACRO,..],       NOTE: THIS IS ONLY SUPPORTED IN THE PFPanelClient Version !!!
+	  "Macros"   : [MACRO,..],
       "SwitchMap": [
           { "Input": "MASTER_BATT",       "Cmd" : [ COMMAND_on, COMMAND_off ] },
           { "Input": "MASTER_ALT",        "Cmd" : [ COMMAND_on, COMMAND_off ] },
@@ -22,15 +22,16 @@ Logitech (Saitek) Pro Flight Switch Panel:
           { "Input": "TAXI",              "Cmd" : [ COMMAND_on, COMMAND_off ] },
           { "Input": "LANDING",           "Cmd" : [ COMMAND_on, COMMAND_off ] }
         ],
-      "Rotary": [COMMAND_posOff, COMMAND_posR, COMMAND_posL, COMMAND_posAll, COMMAND_posStart]
+      "Rotary": 
+	      { "Input":                      "Cmd": [COMMAND_posOff, COMMAND_posR, COMMAND_posL, COMMAND_posAll, COMMAND_posStart] }
     }
     
     see below for COMMAND and MACRO
 
     Note: 
-      for any COMMAND: commands are allocated at the order of appearance
+      for any COMMAND: commands are allocated at the order of appearance in the config file
 
-MACRO format: NOTE: THIS IS ONLY SUPPORTED IN THE PFPanelClient Version !!!
+MACRO format:
 	MacroDef:	{ "MName": "mName", "CmdList": [COMMAND] }    -  COMMAND or a list of COMMAND,COMMAND,...
 				- mName - a macro name defined in the Macros section (must be different from Input names!)
 				- Note: LED directives in macros are ignored - use the LED directive in the M Command 
@@ -38,34 +39,34 @@ MACRO format: NOTE: THIS IS ONLY SUPPORTED IN THE PFPanelClient Version !!!
 COMMAND format:
 
   Macros: NOTE: THIS IS ONLY SUPPORTED IN THE PFPanelClient Version !!!
-	Macro:    { "M": {"Macro": "mName", "LED": "disp" } }  
+	Macro:    { "M": {"Macro": "mName", "Ext1": "disp" } }  
 	           - mName - a macro name defined in the Macros section
 
   Joystick:
-    Axis:     { "A": {"Direction": "X|Y|Z", "Value": number} }
+    Axis:     { "A": {"Direction": "X|Y|Z", "Value": number, "JNo": j} }
                 - number => 0..1000 (normalized)
 		Set the Axis to the value given (0->lower bound, 1000-> upper bound)
 
-    RotAxis:  { "R": {"Direction": "X|Y|Z", "Value": number} }
+    RotAxis:  { "R": {"Direction": "X|Y|Z", "Value": number, "JNo": j} }
                 - number => 0..1000 (normalized)
 		Set the Axis to the value given (0->lower bound, 1000-> upper bound)
     
-    Slider:   { "S": {"Index": 1|2, "Value": number} }
+    Slider:   { "S": {"Index": 1|2, "Value": number, "JNo": j} }
                 - number => 0..1000 (normalized)
 		Set the Slider to the value given (0->lower bound, 1000-> upper bound)
     
-    POV:      { "P": {"Index": 1|2|3|4, "Direction": "c | u | r | d | l", "LED": "disp" } }   
-                - Index n=> 1..MaxPOV (setup of vJoy, max = 60 CIG limit)
+    POV:      { "P": {"Index": 1|2|3|4, "Direction": "c | u | r | d | l", "JNo": j, "Ext1": "disp" } }   
+                - Index n=> 1..MaxPOV (setup of vJoy, max = 4)
                 - Direction either of the chars (center (released), up, right, donw, left)
 		Set the POV to the direction given (will stay there until another command changes this to e.g. center)
 
-    Button:   { "B": {"Index": n, "Mode": "p|r|t|s|d", "Delay":100, "LED": "disp" } } 
-                - Button Index n => 1..VJ_MAXBUTTON (setup of vJoy)
+    Button:   { "B": {"Index": n, "Mode": "p|r|t|s|d", "Delay": msec, "JNo": j, "Ext1": "disp" } } 
+                - Button Index n => 1..VJ_MAXBUTTON (setup of vJoy - SC supports 60)
                 - Mode optional - either of the chars (see below)
 	    Trigger the button with Index with the mode given (NOTE: a "p"ress needs a "r"elease later - otherwise it remains pressed!!)
 
   Keyboard:
-    Key:      { "K": {"VKcodeEx": "keyName", "VKcode": n, "Mode": "p|r|t|s|d", "Modifier": "mod", "Delay": 100, "LED": "disp" } }  
+    Key:      { "K": {"VKcodeEx": "keyName", "VKcode": n, "Mode": "p|r|t|s|d", "Modifier": "mod", "Delay": msec, "Ext1": "disp" } }  
                 - VKcodeEx "s" either a number n=> 1..255 or a WinUser VK_.. literal (see separate Reference file)
                 - VKcode n=> 1..255 WinUser VK_.. (see separate Reference file)
                     if both are found the VKcodeEx item gets priority and the VKcode element is ignored
@@ -77,8 +78,10 @@ COMMAND format:
 
      - Mode:     [mode]      (p)ress, (r)elease, (t)ap, (s)hort tap, (d)ouble tap           (default=tap - short tap is a tap with almost no delay)
      - Modifier: [mod[&mod]] (n)one, (lc)trl, (rc)trl, (la)lt, (ra)lt, (ls)hift, (rs)hift   (default=none - concat modifiers with & char)
-     - Delay:    [delay]      nnnn  milliseconds, optional for Tap and Double Tap           (default=150)     
-     - LED:      [disp]      (n)one,                                                        (default=none - only one modifier is supported)
+     - Delay:    [delay]      nnnn  milliseconds, optional for Tap and Double Tap           (default=150, max 20_000 msec)
+     - JNo:      [joyNumber] >0 Joystick number                                             (default=1)
+	 Panel LEDs
+     - Ext1:     [disp]      (n)one,                                                        (default=none)
                              (NO)ff, (NG)reen, (NR)ed, (LA)amber,   (Nose  Gear LED)
                              (LO)ff, (LG)reen, (LR)ed, (LA)amber,   (Left  Gear LED)
                              (RO)ff, (RG)reen, (RR)ed, (RA)amber    (Right Gear LED)

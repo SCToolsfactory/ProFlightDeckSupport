@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 using PFSP_HID;
-using ProFlightPanelSupport.Commands;
 using ProFlightPanelSupport.VJoy;
+using vjMapper.JInput;
 
 namespace ProFlightPanelSupport.SwitchPanel
 {
@@ -77,6 +73,7 @@ namespace ProFlightPanelSupport.SwitchPanel
         }
         else {
           m_worker.ReportProgress( 0, $" Invalid Config File - aborting" ); // first message..
+          m_worker.ReportProgress( 0, $"   {SwitchPanelConfig.ErrorMsg}" ); // first message..
           abort = true;
         }
       }
@@ -84,21 +81,26 @@ namespace ProFlightPanelSupport.SwitchPanel
         m_worker.ReportProgress( 0, "SwitchPanelSupport - Device open failed" ); // first message..
         abort = true;
       }
-      // Try to connect the Joystick
-      // First try to connect the Joystick interface
-      if ( ( m_bgwContext.JoystickNo > 0 ) && ( m_bgwContext.JoystickNo <= 16 ) ) {
-        if ( !VJoyHandler.Instance.Connect( m_bgwContext.JoystickNo )){
-          m_worker.ReportProgress( 0, $"SwitchPanelSupport - Cannot connect joystick # {m_bgwContext.JoystickNo}" ); // first message..
+      if ( !VJoyHandler.Instance.AreLibrariesLoaded( ) ) {
+        m_worker.ReportProgress( 0, $"SwitchPanelSupport - Libraries are not loaded" ); // first message..
+        abort = true;
+      }else {
+        // First try to connect the Joystick interface
+        if ( ( m_bgwContext.JoystickNo > 0 ) && ( m_bgwContext.JoystickNo <= 16 ) ) {
+          if ( !VJoyHandler.Instance.Connect( m_bgwContext.JoystickNo ) ) {
+            m_worker.ReportProgress( 0, $"SwitchPanelSupport - Cannot connect joystick # {m_bgwContext.JoystickNo}" ); // first message..
+            // we continue with keyboard support only
+          }
+        }
+        else {
+          m_worker.ReportProgress( 0, $"SwitchPanelSupport - Invalid Joystick # {m_bgwContext.JoystickNo}" ); // first message..
+          // we continue with keyboard support only
         }
       }
-      else {
-        m_worker.ReportProgress( 0, $"SwitchPanelSupport - Invalid Joystick # {m_bgwContext.JoystickNo}" ); // first message..
-      }
 
-      // Report about incidents..
 
-        // Task loop - wait until killed - handling happens in the events
-        while ( !abort ) {
+      // Task loop - wait until killed - handling happens in the events
+      while ( !abort ) {
         if ( m_bgwContext.LedChanged ) {
           m_pfspManager.SetLed( PFSwPanelLeds.GEAR_L, m_bgwContext.L_Led );
           m_pfspManager.SetLed( PFSwPanelLeds.GEAR_N, m_bgwContext.N_Led );
@@ -164,12 +166,12 @@ namespace ProFlightPanelSupport.SwitchPanel
       m_worker.ReportProgress( 50, $"SwitchPanelSupport - Rotary changed to {e.State.RotaryState( ).ToString( )}" );
       if ( !VJoyHandler.Instance.Connected ) return;
 
-      string key = e.State.RotaryState( ).ToString( );
+      string key = InputRotary.Rotary_Pos( "ROTARY", (int)e.State.RotaryState( ) );
       if ( m_panelConfig.VJCommands.ContainsKey( key ) ) {
         var cmd = m_panelConfig.VJCommands[key];
         if ( cmd.IsValid ) {
           VJoyHandler.Instance.HandleMessage( cmd );
-          HandleLed( cmd.CtrlLed, cmd.CtrlLedColor );
+          SwitchPanelLed.HandleLed( cmd.CtrlExt1, m_pfspManager );
         }
       }
     }
@@ -179,12 +181,12 @@ namespace ProFlightPanelSupport.SwitchPanel
       m_worker.ReportProgress( 50, $"SwitchPanelSupport - {e.Switch.ToString( )} Down" ); // kind of debug only
       if ( !VJoyHandler.Instance.Connected ) return;
 
-      string key = PanelCommand.Input_Off( e.Switch.ToString( ) );
+      string key = InputSwitch.Input_Off( e.Switch.ToString( ) );
       if ( m_panelConfig.VJCommands.ContainsKey( key ) ) {
         var cmd = m_panelConfig.VJCommands[key];
         if ( cmd.IsValid ) {
           VJoyHandler.Instance.HandleMessage( cmd );
-          HandleLed( cmd.CtrlLed, cmd.CtrlLedColor );
+          SwitchPanelLed.HandleLed( cmd.CtrlExt1, m_pfspManager );
         }
       }
     }
@@ -194,12 +196,12 @@ namespace ProFlightPanelSupport.SwitchPanel
       m_worker.ReportProgress( 50, $"SwitchPanelSupport - {e.Switch.ToString( )} Up" );
       if ( !VJoyHandler.Instance.Connected ) return;
 
-      string key = PanelCommand.Input_On( e.Switch.ToString( ) );
+      string key = InputSwitch.Input_On( e.Switch.ToString( ) );
       if ( m_panelConfig.VJCommands.ContainsKey( key ) ) {
         var cmd = m_panelConfig.VJCommands[key];
         if ( cmd.IsValid ) {
           VJoyHandler.Instance.HandleMessage( cmd );
-          HandleLed( cmd.CtrlLed, cmd.CtrlLedColor );
+          SwitchPanelLed.HandleLed( cmd.CtrlExt1, m_pfspManager );
         }
       }
     }

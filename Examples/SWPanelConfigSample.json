@@ -1,5 +1,5 @@
 {
-  "_Comment" : "SwitchPanel Config File",
+  "_Comment" : "SwitchPanel Config File - Ext1 = LED command extension",
   "MapName": "SwitchPanel Sample Config File",
   "Macros": [
       {
@@ -19,19 +19,21 @@
       { "Input": "DE_ICE",            "Cmd" : [ { "B": {"Index": 1, "Mode": "t"}} ] },
       { "Input": "PITOT_HEAT",        "Cmd" : [ { "B": {"Index": 6, "Mode": "p"}}, { "B": {"Index":6, "Mode":"r"}} ] },
       { "Input": "GEAR",              "Cmd" : [ { "B": {"Index": 1, "Mode": "t"}}, { "B": {"Index":1, "Mode":"t"}} ] },
-      { "Input": "COWL_CLOSE",        "Cmd" : [ { "P": {"Index": 1, "Direction": "u", "LED": "NA" }},{ "P": {"Index": 1, "Direction": "c", "LED": "NO" }} ] },
+      { "Input": "COWL_CLOSE",        "Cmd" : [ { "P": {"Index": 1, "Direction": "u", "Ext1": "NA" }},{ "P": {"Index": 1, "Direction": "c", "Ext1": "NO" }} ] },
       { "Input": "PANEL",             "Cmd" : [ { "B": {"Index": 1, "Mode": "t"}}, { "B": {"Index":1, "Mode":"t"}} ] },
-      { "Input": "BEACON",            "Cmd" : [ { "M": {"Macro": "_MacroOn", "LED": "RG"}}, { "M": {"Macro": "_MacroOff", "LED": "RO"}} ] },
-      { "Input": "NAV",               "Cmd" : [ { "K": {"VKcodeEx": "VK_NUMPADSLASH" }}, { "K": {"VKcodeEx": "VK_NUMPADENTER" }} ] },
-      { "Input": "STROBE",            "Cmd" : [ { "B": {"Index": 1, "Mode": "t", "LED": "LG" }}, { "B": {"Index":1, "Mode":"t", "LED": "LO"}} ] },
+      { "Input": "BEACON",            "Cmd" : [ { "M": {"Macro": "_MacroOn", "Ext1": "RG"}}, { "M": {"Macro": "_MacroOff", "Ext1": "RO"}} ] },
+      { "Input": "NAV",               "Cmd" : [ { "K": {"VKcodeEx": "VK_NP_DIVIDE" }}, { "K": {"VKcodeEx": "VK_NP_ENTER" }} ] },
+      { "Input": "STROBE",            "Cmd" : [ { "B": {"Index": 1, "Mode": "t", "Ext1": "LG" }}, { "B": {"Index":1, "Mode":"t", "Ext1": "LO"}} ] },
       { "Input": "TAXI",              "Cmd" : [ { "K": {"VKcodeEx": "VK_Y" }}, { "K": {"VKcodeEx": "VK_Z" }} ] },
       { "Input": "LANDING",           "Cmd" : [ { "K": {"VKcodeEx": "VK_A", "Modifier": "ls" }}, { "K": {"VKcodeEx": "VK_B", "Modifier": "ls&rs" }} ] }
     ],
-  "Rotary": [
-      { "R": {"Direction": "Z", "Value": 0}},
-      { "R": {"Direction": "Z", "Value": 250}},
-      { "R": {"Direction": "Z", "Value": 500}},
-      { "R": {"Direction": "Z", "Value": 750}},
-      { "R": {"Direction": "Z", "Value": 1000}}
-    ]
+  "Rotary": {
+      "Input":  "ROTARY",            "Cmd" : [
+        { "R": {"Direction": "Z", "Value": 0, "JNo": 1 }},
+        { "R": {"Direction": "Z", "Value": 250, "JNo": 1 }},
+        { "R": {"Direction": "Z", "Value": 500, "JNo": 1 }},
+        { "R": {"Direction": "Z", "Value": 750, "JNo": 1 }},
+        { "R": {"Direction": "Z", "Value": 1000, "JNo": 1 }}
+      ]
+    }
 }

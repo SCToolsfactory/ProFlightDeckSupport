@@ -52,9 +52,20 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Cassini_Logo_Icon.ico</ApplicationIcon>
+    <ApplicationIcon>PFD.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="dxKbdInterfaceWrap, Version=1.1.0.5, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ExtLibraries\dxKbdInterfaceWrap.dll</HintPath>
+    </Reference>
+    <Reference Include="HidLibrary, Version=3.3.26.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\hidlibrary.3.3.26\lib\net45\HidLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="PFSP_HID, Version=1.0.0.5, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ExtLibraries\PFSP_HID.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
@@ -67,31 +78,35 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="Theraot.Core, Version=1.0.3.0, Culture=neutral, PublicKeyToken=b1460dff8a28f7a7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Theraot.Core.1.0.3\lib\NET45\Theraot.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="vjMapper, Version=1.1.0.5, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ExtLibraries\vjMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="vJoy_csWrapper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ExtLibraries\vJoy_csWrapper.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppSettings.cs" />
+    <Compile Include="AApp\AppSettings.cs" />
     <Compile Include="Commands\ConfigFile.cs" />
-    <Compile Include="Commands\PanelCommand.cs" />
     <Compile Include="SwitchPanel\SwitchPanelConfig.cs" />
-    <Compile Include="DxKbd\SCdxKeyboard.cs" />
-    <Compile Include="DxKbd\SCdxKeyboard_DLL.cs" />
-    <Compile Include="DxKbd\SCdxKeycodes.cs" />
-    <Compile Include="PFPanel.cs">
+    <Compile Include="AApp\PFPanel.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PFPanel.Designer.cs">
+    <Compile Include="AApp\PFPanel.Designer.cs">
       <DependentUpon>PFPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Program.cs" />
+    <Compile Include="AApp\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SwitchPanel\SwitchPanelLed.cs" />
     <Compile Include="SwitchPanel\SwitchPanelSupport.cs" />
-    <Compile Include="UnsafeNativeGeneric.cs" />
     <Compile Include="VJoy\VJoyHandler.cs" />
     <Compile Include="VJoy\vJoystick.cs" />
-    <Compile Include="vJoy_csWrapper\vJoy.cs" />
-    <Compile Include="vJoy_csWrapper\vJoyData.cs" />
-    <Compile Include="vJoy_csWrapper\vJoyInterface_DLL.cs" />
-    <EmbeddedResource Include="PFPanel.resx">
+    <EmbeddedResource Include="AApp\PFPanel.resx">
       <DependentUpon>PFPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -115,17 +130,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="AApp\App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PFSP_HID\PFSP_HID.csproj">
-      <Project>{4ddad3f7-6bb8-40a7-8885-fd3622988efb}</Project>
-      <Name>PFSP_HID</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Cassini_Logo_Icon.ico" />
     <Content Include="Doc\ReadMe.txt" />
+    <Content Include="PFD.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
@@ -139,8 +148,20 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="SupportBinaries\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>xcopy $(SolutionDir)ExtLibraries\PFSP_HID.dll  $(TargetDir) /I /Y
+xcopy $(SolutionDir)ExtLibraries\vjMapper.dll  $(TargetDir) /I /Y
+
+xcopy $(SolutionDir)ExtLibraries\dxKbdInterfaceWrap.dll  $(TargetDir) /I /Y
+xcopy $(SolutionDir)ExtLibraries\x86\SCdxKeyboard.dll  $(TargetDir)\x86 /I /Y
+xcopy $(SolutionDir)ExtLibraries\x64\SCdxKeyboard.dll  $(TargetDir)\x64 /I /Y
+
+xcopy $(SolutionDir)ExtLibraries\vJoy_csWrapper.dll  $(TargetDir) /I /Y
+xcopy $(SolutionDir)ExtLibraries\x86\vJoyInterface.dll  $(TargetDir)\x86 /I /Y
+xcopy $(SolutionDir)ExtLibraries\x64\vJoyInterface.dll  $(TargetDir)\x64 /I /Y
+
+</PreBuildEvent>
+  </PropertyGroup>
 </Project>

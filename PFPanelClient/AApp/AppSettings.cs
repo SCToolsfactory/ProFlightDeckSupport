@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ProFlightPanelSupport
+namespace PFPanelClient
 {
   sealed class AppSettings : ApplicationSettingsBase
   {
@@ -83,6 +79,23 @@ namespace ProFlightPanelSupport
       get { return (string)this["ConfigFile"]; }
       set { this["ConfigFile"] = value; }
     }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "127.0.0.1" )]
+    public string ServerIP
+    {
+      get { return (string)this["ServerIP"]; }
+      set { this["ServerIP"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "34123" )]
+    public string ServerPort
+    {
+      get { return (string)this["ServerPort"]; }
+      set { this["ServerPort"] = value; }
+    }
+
 
     #endregion
 

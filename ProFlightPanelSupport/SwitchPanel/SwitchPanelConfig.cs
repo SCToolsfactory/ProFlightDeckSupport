@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.Serialization.Json;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
+
 using ProFlightPanelSupport.Commands;
+using vjMapper;
+using vjMapper.VjOutput;
 
 namespace ProFlightPanelSupport.SwitchPanel
 {
@@ -17,39 +14,9 @@ namespace ProFlightPanelSupport.SwitchPanel
   class SwitchPanelConfig
   {
     /// <summary>
-    /// Reads from the open stream one ConfigFile entry
+    /// Provides error information if we get an invalis object
     /// </summary>
-    /// <param name="jStream">An open stream at position</param>
-    /// <returns>A ConfigFile obj or null for errors</returns>
-    private static ConfigFile FromJson_low( Stream jStream )
-    {
-      try {
-        var jsonSerializer = new DataContractJsonSerializer( typeof( ConfigFile ) );
-        object objResponse = jsonSerializer.ReadObject( jStream );
-        var jsonResults = objResponse as ConfigFile;
-        return jsonResults;
-      }
-      catch ( Exception e ) {
-        return null;
-      }
-    }
-
-    /// <summary>
-    /// Reads from a file one ConfigFile entry
-    /// </summary>
-    /// <param name="jFilename">The Json Filename</param>
-    /// <returns>A ConfigFile obj or null for errors</returns>
-    private static ConfigFile FromJson_low( string jFilename )
-    {
-      ConfigFile c = null;
-      if ( File.Exists( jFilename ) ) {
-        using ( var ts = File.OpenRead( jFilename ) ) {
-          c = FromJson_low( ts );
-        }
-      }
-      return c;
-    }
-
+    public static string ErrorMsg { get; private set; } = "";
 
     /// <summary>
     /// Reads from the open stream and returns a SwitchPanelConfig entry
@@ -58,7 +25,11 @@ namespace ProFlightPanelSupport.SwitchPanel
     /// <returns>A SwitchPanelConfig obj</returns>
     public static SwitchPanelConfig FromJson( Stream jStream )
     {
-      return new SwitchPanelConfig( FromJson_low( jStream ) );
+      var c = vjMapping.FromJsonStream<ConfigFile>( jStream );
+      if ( c == default( ConfigFile ) ) {
+        ErrorMsg = vjMapping.ErrorMsg;
+      }
+      return new SwitchPanelConfig( c );
     }
 
     /// <summary>
@@ -68,18 +39,21 @@ namespace ProFlightPanelSupport.SwitchPanel
     /// <returns>A SwitchPanelConfig obj</returns>
     public static SwitchPanelConfig FromJson( string jFilename )
     {
-      return new SwitchPanelConfig( FromJson_low( jFilename ) );
+      var c = vjMapping.FromJsonFile<ConfigFile>( jFilename );
+      if ( c == default( ConfigFile ) ) {
+        ErrorMsg = vjMapping.ErrorMsg;
+      }
+      return new SwitchPanelConfig( c );
     }
-
 
     #region Class
 
     public bool Valid { get; } = false;
-    private Dictionary<string, VJCommand> m_commands = new Dictionary<string, VJCommand>( );
+    private VJCommandDict m_commands = new VJCommandDict( );
     /// <summary>
     /// All commands as dictonary (string key = input name)
     /// </summary>
-    public Dictionary<string, VJCommand> VJCommands { get => m_commands; }
+    public VJCommandDict VJCommands { get => m_commands; }
 
     private string m_configName = "";
     public string ConfigName
@@ -94,8 +68,9 @@ namespace ProFlightPanelSupport.SwitchPanel
     public SwitchPanelConfig( ConfigFile configFile )
     {
       if ( configFile == null ) return; // No configFile given Valid=> false;
+
       m_configName = configFile.MapName;
-      m_commands = configFile.VJCommands;
+      m_commands = configFile.VJCommandDict;
       Valid = m_commands.Count > 0;
     }
 
