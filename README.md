@@ -3,13 +3,13 @@ Support for HID devices of the Pro Flight Panel series
   Currently supported: Pro Flight Switch Panel
 
 ### General note to builders
-The Project files expect referenced Libraries which have no NuGet package reference in a Solution directory  ´ExtLibraries´  
+The Project files expect referenced Libraries which have no NuGet package reference in a Solution directory  Â´ExtLibrariesÂ´  
 Those external libraries can built from the project SC_Toolbox:  
 https://github.com/SCToolsfactory/SC_Toolbox
 
 NOTE: THIS _ IS _ VERY _ EARLY _ WORK _ IN _ PROGRESS _ IT _ MAY _ JUST _ BREAK _ AT _ ANY _ TIME ;-)  
 
-# PFPanelClient V1.2 an SCJoyServer Client
+# PFPanelClient V1.3 an SCJoyServer Client
 Intends to connect to an SCJoyServer  
 
 
@@ -30,7 +30,7 @@ Just within the application Exe folder:
 *  HidLibrary.dll             HID Access Library 
 *  Theraot.Core.dll           HID Access Support Library 
 
-# ProFlightPanelSupport V 1.2 the standalone program
+# ProFlightPanelSupport V 1.3 the standalone program
 Provides a small standalone program to enable the Pro Flight Switch Panel acting as vJoy and/or Keyboard.  
 Actuates ONE vJoy virtual Joystick and supplies keystrokes to the active window 
  
